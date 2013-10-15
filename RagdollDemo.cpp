@@ -159,7 +159,6 @@ public:
 		transform.setOrigin(btVector3(btScalar(0.18), btScalar(0.2), btScalar(0.)));
 		m_bodies[BODYPART_RIGHT_LOWER_LEG] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_RIGHT_LOWER_LEG]);
 
-		transform.setIdentity();
 		transform.setOrigin(btVector3(btScalar(-0.35), btScalar(1.45), btScalar(0.)));
 		transform.getBasis().setEulerZYX(0,0,M_PI_2);
 		m_bodies[BODYPART_LEFT_UPPER_ARM] = localCreateRigidBody(btScalar(1.), offset*transform, m_shapes[BODYPART_LEFT_UPPER_ARM]);
@@ -326,8 +325,26 @@ public:
 	}
 };
 
+void RagdollDemo::CreateSphereBox(){
 
+	CreateBox(0, 0,0,0, 5, 2, 0.5);
+	CreateBox(1, 5,2.5,4.5, 0.5, 2, 5);
 
+}
+
+void RagdollDemo::CreateBox(int index, double x, double y, double z, double length, double width, double height){
+	geom[index] = new btBoxShape(btVector3(btScalar(length),btScalar(width),btScalar(height))); 
+	btTransform offset; 
+	offset.setIdentity(); 
+	offset.setOrigin(btVector3(btScalar(x),btScalar(y),btScalar(z))); 
+	body[index] = localCreateRigidBody(btScalar(1.0),offset,geom[index]); 
+
+	//body[index]->setUserPointer(&IDs[index]);
+
+	//if(index>9){
+	//	body[index]->setMassProps(100, btVector3(0,0,0));
+//	}
+}
 
 void RagdollDemo::initPhysics()
 {
@@ -336,7 +353,7 @@ void RagdollDemo::initPhysics()
 	setTexturing(true);
 	setShadows(true);
 
-	setCameraDistance(btScalar(5.));
+	setCameraDistance(btScalar(15.));
 
 	m_collisionConfiguration = new btDefaultCollisionConfiguration();
 
@@ -376,9 +393,12 @@ void RagdollDemo::initPhysics()
 
 	// Spawn one ragdoll
 	btVector3 startOffset(1,0.5,0);
-	spawnRagdoll(startOffset);
+	//spawnRagdoll(startOffset);
 	startOffset.setValue(-1,0.5,0);
-	spawnRagdoll(startOffset);
+	//spawnRagdoll(startOffset);
+
+	//Create the box for the spheres
+	CreateSphereBox();
 
 	clientResetScene();		
 }

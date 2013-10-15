@@ -326,14 +326,27 @@ public:
 };
 
 void RagdollDemo::CreateSphereBox(){
+	//       index x y z width height length
 
-	CreateBox(0, 0,0,0, 5, 2, 0.5);
-	CreateBox(1, 5,2.5,4.5, 0.5, 2, 5);
+	int cage_height = 2;
+
+	//cage 1     x          y       z       width  height           legnth
+	CreateBox(0, 0,			0,		0, 		6, 		cage_height,    0.25); //Back
+	CreateBox(1, -6.125,	0,     -6, 		0.25,   cage_height, 	6.25); //Right
+	CreateBox(2, 0,			0,     -12, 	6, 		cage_height, 	0.25); //front
+	CreateBox(3, 6.125,		0,     -6, 		0.25, 	cage_height, 	6.25); //LEFT
+
+	int box2offset = -15;
+					// x                Y    Z     Width  height        length
+	CreateBox(4, box2offset + 0,        0,   0,    6,     cage_height,	 0.25); //Back
+	CreateBox(5, box2offset + -6.125,   0,  -6,    0.25,  cage_height,   6.25); //Right
+	CreateBox(6, box2offset + 0,        0,  -12,   6,     cage_height,   0.25); //front
+	CreateBox(7, box2offset + 6.125,    0,  -6,    0.25,  cage_height,   6.25); //LEFT
 
 }
 
-void RagdollDemo::CreateBox(int index, double x, double y, double z, double length, double width, double height){
-	geom[index] = new btBoxShape(btVector3(btScalar(length),btScalar(width),btScalar(height))); 
+void RagdollDemo::CreateBox(int index, double x, double y, double z, double width, double height, double length){
+	geom[index] = new btBoxShape(btVector3(btScalar(width),btScalar(height),btScalar(length))); 
 	btTransform offset; 
 	offset.setIdentity(); 
 	offset.setOrigin(btVector3(btScalar(x),btScalar(y),btScalar(z))); 
@@ -342,7 +355,7 @@ void RagdollDemo::CreateBox(int index, double x, double y, double z, double leng
 	//body[index]->setUserPointer(&IDs[index]);
 
 	//if(index>9){
-	//	body[index]->setMassProps(100, btVector3(0,0,0));
+		body[index]->setMassProps(100, btVector3(0,0,0));
 //	}
 }
 

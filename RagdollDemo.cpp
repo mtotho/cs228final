@@ -333,20 +333,67 @@ void RagdollDemo::CreateSphereBox(){
 	int box1offset = 9;
 	int box2offset = -9;
 	
-	//cage 1     x          y       z       width  height           legnth
-	CreateBox(0, box1offset + 0,			0,		0, 		6, 		cage_height,    0.25); //Back
-	CreateBox(1, box1offset + -6.125,	0,     -6, 		0.25,   cage_height, 	6.25); //Right
-	CreateBox(2, box1offset + 0,			0,     -12, 	6, 		cage_height, 	0.25); //front
-	CreateBox(3, box1offset + 6.125,		0,     -6, 		0.25, 	cage_height, 	6.25); //LEFT
+	//cage 1     x                          y       z       width  height           legnth
+	CreateBox(0, box1offset + 0,			0,		0, 		6.5, 		cage_height,    0.25); //Back
+	CreateBox(1, box1offset + -6.625,	    0,     -6.5, 		0.25,   cage_height, 	6.75); //Right
+	CreateBox(2, box1offset + 0,			0,     -13, 	6.5, 		cage_height, 	0.25); //front
+	CreateBox(3, box1offset + 6.625,		0,     -6.5, 		0.25, 	cage_height, 	6.75); //LEFT
 
 	
 					// x                Y    Z     Width  height        length
-	CreateBox(4, box2offset + 0,        0,   0,    6,     cage_height,	 0.25); //Back
-	CreateBox(5, box2offset + -6.125,   0,  -6,    0.25,  cage_height,   6.25); //Right
-	CreateBox(6, box2offset + 0,        0,  -12,   6,     cage_height,   0.25); //front
-	CreateBox(7, box2offset + 6.125,    0,  -6,    0.25,  cage_height,   6.25); //LEFT
+	CreateBox(4, box2offset + 0,        0,   0,    6.5,     cage_height,	 0.25); //Back
+	CreateBox(5, box2offset + -6.625,   0,  -6.5,    0.25,  cage_height,   6.75); //Right
+	CreateBox(6, box2offset + 0,        0,  -13,   6.5,     cage_height,   0.25); //front
+	CreateBox(7, box2offset + 6.625,    0,  -6.5,    0.25,  cage_height,   6.75); //LEFT
 
 }
+
+void RagdollDemo::CreateSpheres(){
+	//spheres[0] = new btCapsuleShape(btScalar(0.10), btScalar(0.05));
+
+	//             index    x    y     z    radius
+	//Left most column
+	CreateCylinder(0, 		13.5,	 0,	   -2, 	  1);
+	CreateCylinder(1, 		13.5,	 0,	   -5, 	  1);
+	CreateCylinder(2, 		13.5,	 0,	   -8, 	  1);
+	CreateCylinder(3, 		13.5,	 0,	   -11,   1);
+
+	//second to left
+	CreateCylinder(4, 		10.5,	 0,	   -2, 	  1);
+	CreateCylinder(5, 		10.5,	 0,	   -5, 	  1);
+	CreateCylinder(6, 		10.5,	 0,	   -8, 	  1);
+	CreateCylinder(7, 		10.5,	 0,	   -11,   1);
+
+	//third from left
+	CreateCylinder(8, 		7.5,	 0,	   -2, 	  1);
+	CreateCylinder(9, 		7.5,	 0,	   -5, 	  1);
+	CreateCylinder(10, 		7.5,	 0,	   -8, 	  1);
+	CreateCylinder(11, 		7.5,	 0,	   -11,   1);
+
+	//right most column
+	CreateCylinder(8, 		4.5,	 0,	   -2, 	  1);
+	CreateCylinder(9, 		4.5,	 0,	   -5, 	  1);
+	CreateCylinder(10, 		4.5,	 0,	   -8, 	  1);
+	CreateCylinder(11, 		4.5,	 0,	   -11,   1);
+}
+
+void RagdollDemo::CreateCylinder(int index,double x, double y, double z,double radius){
+	
+	//	geom[index] = new btCylinderShape(btVector3(btScalar(radius),btScalar(length),btScalar(0)));
+
+	spheres_shape[index] = new btCapsuleShape(btScalar(radius),btScalar(0));
+	btTransform offset; 
+	offset.setIdentity(); 
+	offset.setOrigin(btVector3(btScalar(x),btScalar(y),btScalar(z)));
+
+	btTransform transform;
+	transform.setOrigin(btVector3(btScalar(0),btScalar(1),btScalar(0)));
+	transform.getBasis().setEulerZYX(1,0,0); 
+
+	spheres_body[index] = localCreateRigidBody(btScalar(1.0),offset*transform,spheres_shape[index]);
+	//spheres_bodybody[index]->setUserPointer(&IDs[index]);
+}
+
 
 void RagdollDemo::CreateBox(int index, double x, double y, double z, double width, double height, double length){
 	geom[index] = new btBoxShape(btVector3(btScalar(width),btScalar(height),btScalar(length))); 
@@ -415,6 +462,7 @@ void RagdollDemo::initPhysics()
 
 	//Create the box for the spheres
 	CreateSphereBox();
+	CreateSpheres();
 
 	clientResetScene();		
 }

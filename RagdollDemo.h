@@ -46,10 +46,13 @@ class RagdollDemo : public GlutDemoApplication
 	btDefaultCollisionConfiguration* m_collisionConfiguration;
 
 public:
+	btCollisionShape* spheres_shape[20];
+	btRigidBody* spheres_body[20];
+
 	btRigidBody* body[19];
 	btCollisionShape* geom[19];
 
-	
+
 	void initPhysics();
 
 	void exitPhysics();
@@ -76,7 +79,9 @@ public:
 	}
 
 	void CreateBox(int index, double x, double y, double z, double length, double width, double height);
-	
+	void CreateCylinder(int index,double x, double y, double z,double radius);
+
+	void CreateSpheres();
 	void CreateSphereBox();
 };
 

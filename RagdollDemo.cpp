@@ -330,13 +330,16 @@ void RagdollDemo::CreateSphereBox(){
 
 	int cage_height = 2;
 
+	int box1offset = 9;
+	int box2offset = -9;
+	
 	//cage 1     x          y       z       width  height           legnth
-	CreateBox(0, 0,			0,		0, 		6, 		cage_height,    0.25); //Back
-	CreateBox(1, -6.125,	0,     -6, 		0.25,   cage_height, 	6.25); //Right
-	CreateBox(2, 0,			0,     -12, 	6, 		cage_height, 	0.25); //front
-	CreateBox(3, 6.125,		0,     -6, 		0.25, 	cage_height, 	6.25); //LEFT
+	CreateBox(0, box1offset + 0,			0,		0, 		6, 		cage_height,    0.25); //Back
+	CreateBox(1, box1offset + -6.125,	0,     -6, 		0.25,   cage_height, 	6.25); //Right
+	CreateBox(2, box1offset + 0,			0,     -12, 	6, 		cage_height, 	0.25); //front
+	CreateBox(3, box1offset + 6.125,		0,     -6, 		0.25, 	cage_height, 	6.25); //LEFT
 
-	int box2offset = -15;
+	
 					// x                Y    Z     Width  height        length
 	CreateBox(4, box2offset + 0,        0,   0,    6,     cage_height,	 0.25); //Back
 	CreateBox(5, box2offset + -6.125,   0,  -6,    0.25,  cage_height,   6.25); //Right
@@ -366,7 +369,7 @@ void RagdollDemo::initPhysics()
 	setTexturing(true);
 	setShadows(true);
 
-	setCameraDistance(btScalar(15.));
+	setCameraDistance(btScalar(25.));
 
 	m_collisionConfiguration = new btDefaultCollisionConfiguration();
 

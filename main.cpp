@@ -27,5 +27,5 @@ int main(int argc,char* argv[])
         demoApp.initPhysics();
 		demoApp.getDynamicsWorld()->setDebugDrawer(&gDebugDrawer);
 
-        return glutmain(argc, argv,640,480,"MFT",&demoApp);
+        return glutmain(argc, argv,640,480,"Josh Barry & Mike Toth CS228",&demoApp);
 }

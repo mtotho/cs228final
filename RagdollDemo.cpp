@@ -186,6 +186,16 @@ public:
 			m_bodies[i]->setSleepingThresholds(1.6, 2.5);
 		}
 
+		//Optional Wind Dimensions
+		int i;
+		for (i=m_shapes->getNumCollisionObjects()-1; i>=0 ;i--)
+		{
+		   btCollisionObject* obj = m_shapes->getCollisionObjectArray()[i];
+		   btRigidBody* body = btRigidBody::upcast(obj);
+		   if(!body->isStaticObject())
+		   body->applyCentralForce(btVector3(10.f,0.f,0.f)); 
+		}
+
 		// Now setup the constraints
 		btHingeConstraint* hingeC;
 		btConeTwistConstraint* coneC;

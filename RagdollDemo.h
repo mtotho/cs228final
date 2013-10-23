@@ -50,9 +50,11 @@ public:
 	btRigidBody* spheres_body[20];
 
 
-	btCollisionShape* flagpole_shape;
-	btRigidBody*	flagpole_body;
+	btCollisionShape* flag_shape;
+	btRigidBody*	flag_body;
 
+	bool pause;
+	
 	btRigidBody* body[19];
 	btCollisionShape* geom[19];
 

@@ -422,8 +422,10 @@ void RagdollDemo::CreateCylinder2(double x, double y, double z,double radius, do
 	transform.getBasis().setEulerZYX(eulerX,eulerY,eulerZ); 
 
 	//body[index] = 
-	btRigidBody* cylinder_body = localCreateRigidBody(btScalar(1.0),offset*transform,geom[index]);
+	btRigidBody* cylinder_body =  localCreateRigidBody(btScalar(1.0),offset*transform,cylinder_shape);
 	//body[index]->setUserPointer(&IDs[index]);
+
+	cylinder_body->setMassProps(100, btVector3(0,0,0));
 }
 
 void RagdollDemo::CreateBox(int index, double x, double y, double z, double width, double height, double length){
@@ -443,7 +445,8 @@ void RagdollDemo::CreateBox(int index, double x, double y, double z, double widt
 void RagdollDemo::initPhysics()
 {
 	// Setup the basic world
-
+	pause = false;
+	
 	setTexturing(true);
 	setShadows(true);
 
@@ -495,8 +498,29 @@ void RagdollDemo::initPhysics()
 	CreateSphereBox();
 	CreateSpheres();
 
+	//CreateCylinder2(double x, double y, double z,double radius, double length, double eulerX, double eulerY, double eulerZ)
 	//Create Flag pole
-	CreateCylinder()
+	CreateCylinder2(0, 0, 3, 0.5, 14, 0, 0, 0);
+
+	//Create flag (put this into function later)
+	int flagx=-4;
+	int flagy=13;
+	int flagz=3;
+	int flagwidth=4;
+	int flagheight=2;
+	double flaglength=0.25;
+
+	flag_shape = new btBoxShape(btVector3(btScalar(flagwidth),btScalar(flagheight),btScalar(flaglength))); 
+	btTransform offset; 
+	offset.setIdentity(); 
+	offset.setOrigin(btVector3(btScalar(flagx),btScalar(flagy),btScalar(flagz))); 
+	flag_body = localCreateRigidBody(btScalar(1.0),offset,flag_shape); 
+
+	//body[index]->setUserPointer(&IDs[index]);
+
+	//if(index>9){
+		flag_body->setMassProps(1, btVector3(0,0,0));
+
 
 	clientResetScene();		
 }
@@ -520,7 +544,9 @@ void RagdollDemo::clientMoveAndDisplay()
 
 	if (m_dynamicsWorld)
 	{
-		m_dynamicsWorld->stepSimulation(ms / 1000000.f);
+		if(!pause){
+			m_dynamicsWorld->stepSimulation(ms / 1000000.f);
+		}
 		
 		//optional but useful: debug drawing
 		m_dynamicsWorld->debugDrawWorld();
@@ -558,6 +584,15 @@ void RagdollDemo::keyboardCallback(unsigned char key, int x, int y)
 		btVector3 startOffset(0,2,0);
 		spawnRagdoll(startOffset);
 		break;
+		}
+	case 'p':
+		{
+			if(!pause){
+				pause = true;
+			}else{
+				pause = false;
+			}
+			break;
 		}
 	default:
 		DemoApplication::keyboardCallback(key, x, y);

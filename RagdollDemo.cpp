@@ -187,14 +187,14 @@ public:
 		}
 
 		//Optional Wind Dimensions
-		int i;
-		for (i=m_shapes->getNumCollisionObjects()-1; i>=0 ;i--)
-		{
-		   btCollisionObject* obj = m_shapes->getCollisionObjectArray()[i];
-		   btRigidBody* body = btRigidBody::upcast(obj);
-		   if(!body->isStaticObject())
-		   body->applyCentralForce(btVector3(10.f,0.f,0.f)); 
-		}
+		//int i;
+		//for (i=m_shapes->getNumCollisionObjects()-1; i>=0 ;i--)
+		//{
+		  // btCollisionObject* obj = *m_shapes->getCollisionObjectArray()[i];
+		  // btRigidBody* body = btRigidBody::upcast(obj);
+		   //if(!body->isStaticObject())
+		   //body->applyCentralForce(btVector3(10.f,0.f,0.f)); 
+		//}
 
 		// Now setup the constraints
 		btHingeConstraint* hingeC;
@@ -387,6 +387,7 @@ void RagdollDemo::CreateSpheres(){
 	CreateCylinder(11, 		4.5,	 0,	   -11,   1);
 }
 
+//This is actually create Sphere. will change
 void RagdollDemo::CreateCylinder(int index,double x, double y, double z,double radius){
 	
 	//	geom[index] = new btCylinderShape(btVector3(btScalar(radius),btScalar(length),btScalar(0)));
@@ -404,6 +405,26 @@ void RagdollDemo::CreateCylinder(int index,double x, double y, double z,double r
 	//spheres_bodybody[index]->setUserPointer(&IDs[index]);
 }
 
+
+//Note this is the real create cylinder
+void RagdollDemo::CreateCylinder2(double x, double y, double z,double radius, double length, double eulerX, double eulerY, double eulerZ){
+	
+	//geom[index] = new btCylinderShape(btVector3(btScalar(radius),btScalar(length),btScalar(0)));
+
+	//geom[index] 
+	btCollisionShape* cylinder_shape = new btCapsuleShape(btScalar(radius),btScalar(length));
+	btTransform offset; 
+	offset.setIdentity(); 
+	offset.setOrigin(btVector3(btScalar(x),btScalar(y),btScalar(z)));
+
+	btTransform transform;
+	transform.setOrigin(btVector3(btScalar(0),btScalar(1),btScalar(0)));
+	transform.getBasis().setEulerZYX(eulerX,eulerY,eulerZ); 
+
+	//body[index] = 
+	btRigidBody* cylinder_body = localCreateRigidBody(btScalar(1.0),offset*transform,geom[index]);
+	//body[index]->setUserPointer(&IDs[index]);
+}
 
 void RagdollDemo::CreateBox(int index, double x, double y, double z, double width, double height, double length){
 	geom[index] = new btBoxShape(btVector3(btScalar(width),btScalar(height),btScalar(length))); 
@@ -473,6 +494,9 @@ void RagdollDemo::initPhysics()
 	//Create the box for the spheres
 	CreateSphereBox();
 	CreateSpheres();
+
+	//Create Flag pole
+	CreateCylinder()
 
 	clientResetScene();		
 }

@@ -534,7 +534,7 @@ void RagdollDemo::keyboardCallback(unsigned char key, int x, int y)
 		btVector3 startOffset(0,2,0);
 		spawnRagdoll(startOffset);
 		break;
-		}
+		} 
 	default:
 		DemoApplication::keyboardCallback(key, x, y);
 	}

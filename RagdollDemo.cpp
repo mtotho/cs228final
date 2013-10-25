@@ -407,7 +407,7 @@ void RagdollDemo::CreateCylinder(int index,double x, double y, double z,double r
 
 
 //Note this is the real create cylinder
-void RagdollDemo::CreateCylinder2(double x, double y, double z,double radius, double length, double eulerX, double eulerY, double eulerZ){
+btRigidBody* RagdollDemo::CreateCylinder2(double x, double y, double z,double radius, double length, double eulerX, double eulerY, double eulerZ){
 	
 	//geom[index] = new btCylinderShape(btVector3(btScalar(radius),btScalar(length),btScalar(0)));
 
@@ -426,6 +426,8 @@ void RagdollDemo::CreateCylinder2(double x, double y, double z,double radius, do
 	//body[index]->setUserPointer(&IDs[index]);
 
 	cylinder_body->setMassProps(100, btVector3(0,0,0));
+
+	return cylinder_body;
 }
 
 void RagdollDemo::CreateBox(int index, double x, double y, double z, double width, double height, double length){
@@ -441,6 +443,15 @@ void RagdollDemo::CreateBox(int index, double x, double y, double z, double widt
 		body[index]->setMassProps(100, btVector3(0,0,0));
 //	}
 }
+
+void RagdollDemo::CreateHinge(btRigidBody* bodyA, btRigidBody* bodyB, const btVector3& axisInA, const btVector3& axisInB,
+		const btVector3& pivotInA, const btVector3& pivotInB){
+	
+	btHingeConstraint* joint = new btHingeConstraint(*bodyA, *bodyB, pivotInA, pivotInB, axisInA, axisInB);
+	//btHingeConstraint* tempHinge = new btHingeConstraint(*body[bodyAIndex], *body[bodyBIndex], pivotInA, pivotInB, axisInA, axisInB);
+	m_dynamicsWorld->addConstraint(joint, true);
+}
+
 
 void RagdollDemo::initPhysics()
 {
@@ -500,7 +511,7 @@ void RagdollDemo::initPhysics()
 
 	//CreateCylinder2(double x, double y, double z,double radius, double length, double eulerX, double eulerY, double eulerZ)
 	//Create Flag pole
-	CreateCylinder2(0, 0, 3, 0.5, 14, 0, 0, 0);
+	flag_pole = CreateCylinder2(0, 0, 3, 0.5, 14, 0, 0, 0);
 
 	//Create flag (put this into function later)
 	int flagx=-4;
@@ -521,6 +532,9 @@ void RagdollDemo::initPhysics()
 	//if(index>9){
 		flag_body->setMassProps(1, btVector3(0,0,0));
 
+	//CreateHinge(btRigidBody* bodyA, btRigidBody* bodyB, const btVector3& axisInA, const btVector3& axisInB,
+		//const btVector3& pivotInA, const btVector3& pivotInB);
+	//CreateHinge(flag_pole, flag_body, btVector3(,0,-1));
 
 	clientResetScene();		
 }

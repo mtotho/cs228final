@@ -50,6 +50,8 @@ public:
 	btRigidBody* spheres_body[20];
 
 
+	btRigidBody* flag_pole;
+
 	btCollisionShape* flag_shape;
 	btRigidBody*	flag_body;
 
@@ -86,10 +88,13 @@ public:
 
 	void CreateBox(int index, double x, double y, double z, double length, double width, double height);
 	void CreateCylinder(int index,double x, double y, double z,double radius);
-	void CreateCylinder2(double x, double y, double z,double radius, double length, double eulerX, double eulerY, double eulerZ);
+	btRigidBody* CreateCylinder2(double x, double y, double z,double radius, double length, double eulerX, double eulerY, double eulerZ);
 
 	void CreateSpheres();
 	void CreateSphereBox();
+
+	void CreateHinge(btRigidBody* bodyA, btRigidBody* bodyB, const btVector3& axisInA, const btVector3& axisInB,
+		const btVector3& pivotInA, const btVector3& pivotInB);
 };
 
 

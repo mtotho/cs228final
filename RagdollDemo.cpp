@@ -620,6 +620,12 @@ void RagdollDemo::keyboardCallback(unsigned char key, int x, int y)
 	case 'n':
 		{
 			ct = ct + 1;
+			spheres_body[0]-
+			break;
+		}
+	case 'b':
+		{
+			ct = ct - 1;
 			break;
 		}
 	default:

@@ -538,9 +538,29 @@ void RagdollDemo::initPhysics()
 
 	//CreateHinge(btRigidBody* bodyA, btRigidBody* bodyB, const btVector3& axisInA, const btVector3& axisInB,
 		//const btVector3& pivotInA, const btVector3& pivotInB);
-	//CreateHinge(flag_pole, flag_body, btVector3(,0,-1));
 
-	clientResetScene();		
+
+		//btVector3 axisInA = btTransform local1 = body->getCenterOfMassTransform().inverse();
+		//local1*p;
+
+		//btTransform local1 = body->getCenterOfMassTransform().inverse();
+	//return local1*p;
+
+	//CreateHinge(flag_pole, flag_body, AxisWorldToLocal(flag_pole, btVector3(1, 0, 0)), AxisWorldToLocal(flag_body, btVector3(1, 0, 0)),
+	//	 PointWorldToLocal(flag_pole, btVector3(0, 12, 0.5)), PointWorldToLocal(flag_body, btVector3(0, 1, 0));
+
+	//reset some ball stuff
+	ct=0;
+
+
+	clientResetScene();
+
+
+	for(int i=0; i<16; i++){
+		//ResetGravity(i);
+		isFloating[i]=false;
+	}
+		
 }
 
 void RagdollDemo::spawnRagdoll(const btVector3& startOffset)
@@ -591,6 +611,7 @@ void RagdollDemo::displayCallback()
 
 	glFlush();
 	glutSwapBuffers();
+
 }
 
 void RagdollDemo::keyboardCallback(unsigned char key, int x, int y)
@@ -614,13 +635,17 @@ void RagdollDemo::keyboardCallback(unsigned char key, int x, int y)
 		}
 	case 'f':
 		{
-			levitateBall(ct);
+			if(isFloating[ct]){
+				dropBall(ct);
+			}else{
+				levitateBall(ct);
+			}
 			break;
 		}
 	case 'n':
 		{
 			ct = ct + 1;
-			spheres_body[0]-
+			//spheres_body[0]-
 			break;
 		}
 	case 'b':
@@ -634,11 +659,40 @@ void RagdollDemo::keyboardCallback(unsigned char key, int x, int y)
 
 	
 }
+/*
+
+btVector3 RagdollDemo::PointWorldToLocal(btRigidBody* body, btVector3& p)
+{
+	btTransform local1 = body->getCenterOfMassTransform().inverse();
+	return local1*p;
+}
+
+btVector3 RagdollDemo::AxisWorldToLocal(btRigidBody* body, btVector3& a) {
+	btTransform local1 = body->getCenterOfMassTransform().inverse();
+	btVector3 zero(0,0,0);
+	local1.setOrigin(zero);
+	return local1*a;
+}
+*/
+void RagdollDemo::ResetGravity(int i){
+	spheres_body[i]->activate(true);
+	spheres_body[i]->setGravity(btVector3(btScalar(0),btScalar(0),btScalar(0)));
+	isFloating[i]=false;
+} 
+
+
+void RagdollDemo::dropBall(int i){
+	//spheres_body[i]->activate(false);
+	spheres_body[i]->setGravity(btVector3(btScalar(0),btScalar(-2),btScalar(0)));
+	isFloating[i]=false;
+}
 
 void RagdollDemo::levitateBall(int i)
 {
 	spheres_body[i]->activate(true);
 	spheres_body[i]->setGravity(btVector3(btScalar(0),btScalar(1),btScalar(0)));
+
+	isFloating[i]=true;
 }
 
 void	RagdollDemo::exitPhysics()
@@ -688,6 +742,12 @@ void	RagdollDemo::exitPhysics()
 	delete m_dispatcher;
 
 	delete m_collisionConfiguration;
+
+	ct=0; 
+	for(int i=0; i<16; i++){
+		//ResetGravity(i);
+		isFloating[i]=false;
+	}
 
 	
 }

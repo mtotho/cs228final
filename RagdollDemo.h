@@ -46,8 +46,9 @@ class RagdollDemo : public GlutDemoApplication
 	btDefaultCollisionConfiguration* m_collisionConfiguration;
 
 public:
-	btCollisionShape* spheres_shape[20];
-	btRigidBody* spheres_body[20];
+	btCollisionShape* spheres_shape[16];
+	btRigidBody* spheres_body[16];
+	bool isFloating[16];
 
 
 	btRigidBody* flag_pole;
@@ -91,6 +92,11 @@ public:
 	btRigidBody* CreateCylinder2(double x, double y, double z,double radius, double length, double eulerX, double eulerY, double eulerZ);
 
 	void levitateBall(int i);
+	void ResetGravity(int i);
+	void dropBall(int i);
+
+	//void PointWorldToLocal(btRigidBody* body, btVector3& p);
+	//void AxisWorldToLocal(btRigidBody* body, btVector3& a);
 
 	void CreateSpheres();
 	void CreateSphereBox();

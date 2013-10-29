@@ -187,14 +187,14 @@ public:
 		}
 
 		//Optional Wind Dimensions
-		int i;
-		for (i=m_shapes->getNumCollisionObjects()-1; i>=0 ;i--)
-		{
-		   btCollisionObject* obj = m_shapes->getCollisionObjectArray()[i];
-		   btRigidBody* body = btRigidBody::upcast(obj);
-		   if(!body->isStaticObject())
-		   body->applyCentralForce(btVector3(10.f,0.f,0.f)); 
-		}
+		//int i;
+		//for (i=m_shapes->getNumCollisionObjects()-1; i>=0 ;i--)
+		//{
+		  // btCollisionObject* obj = *m_shapes->getCollisionObjectArray()[i];
+		  // btRigidBody* body = btRigidBody::upcast(obj);
+		   //if(!body->isStaticObject())
+		   //body->applyCentralForce(btVector3(10.f,0.f,0.f)); 
+		//}
 
 		// Now setup the constraints
 		btHingeConstraint* hingeC;
@@ -307,7 +307,7 @@ public:
 		hingeC->setLimit(btScalar(0), btScalar(M_PI_2));
 		m_joints[JOINT_RIGHT_ELBOW] = hingeC;
 		hingeC->setDbgDrawSize(CONSTRAINT_DEBUG_SIZE);
-
+		
 		m_ownerWorld->addConstraint(m_joints[JOINT_RIGHT_ELBOW], true);
 	}
 
@@ -355,6 +355,9 @@ void RagdollDemo::CreateSphereBox(){
 	CreateBox(5, box2offset + -6.625,   0,  -6.5,    0.25,  cage_height,   6.75); //Right
 	CreateBox(6, box2offset + 0,        0,  -13,   6.5,     cage_height,   0.25); //front
 	CreateBox(7, box2offset + 6.625,    0,  -6.5,    0.25,  cage_height,   6.75); //LEFT
+	
+	//Create box under a ball. 
+	//CreateBox(8, 13.5,					0,	-2,		1,		.001,			1); //bottom selector box
 
 }
 
@@ -387,6 +390,7 @@ void RagdollDemo::CreateSpheres(){
 	CreateCylinder(11, 		4.5,	 0,	   -11,   1);
 }
 
+//This is actually create Sphere. will change
 void RagdollDemo::CreateCylinder(int index,double x, double y, double z,double radius){
 	
 	//	geom[index] = new btCylinderShape(btVector3(btScalar(radius),btScalar(length),btScalar(0)));
@@ -405,6 +409,30 @@ void RagdollDemo::CreateCylinder(int index,double x, double y, double z,double r
 }
 
 
+//Note this is the real create cylinder
+btRigidBody* RagdollDemo::CreateCylinder2(double x, double y, double z,double radius, double length, double eulerX, double eulerY, double eulerZ){
+	
+	//geom[index] = new btCylinderShape(btVector3(btScalar(radius),btScalar(length),btScalar(0)));
+
+	//geom[index] 
+	btCollisionShape* cylinder_shape = new btCapsuleShape(btScalar(radius),btScalar(length));
+	btTransform offset; 
+	offset.setIdentity(); 
+	offset.setOrigin(btVector3(btScalar(x),btScalar(y),btScalar(z)));
+
+	btTransform transform;
+	transform.setOrigin(btVector3(btScalar(0),btScalar(1),btScalar(0)));
+	transform.getBasis().setEulerZYX(eulerX,eulerY,eulerZ); 
+
+	//body[index] = 
+	btRigidBody* cylinder_body =  localCreateRigidBody(btScalar(1.0),offset*transform,cylinder_shape);
+	//body[index]->setUserPointer(&IDs[index]);
+
+	cylinder_body->setMassProps(100, btVector3(0,0,0));
+
+	return cylinder_body;
+}
+
 void RagdollDemo::CreateBox(int index, double x, double y, double z, double width, double height, double length){
 	geom[index] = new btBoxShape(btVector3(btScalar(width),btScalar(height),btScalar(length))); 
 	btTransform offset; 
@@ -419,10 +447,20 @@ void RagdollDemo::CreateBox(int index, double x, double y, double z, double widt
 //	}
 }
 
+void RagdollDemo::CreateHinge(btRigidBody* bodyA, btRigidBody* bodyB, const btVector3& axisInA, const btVector3& axisInB,
+		const btVector3& pivotInA, const btVector3& pivotInB){
+	
+	btHingeConstraint* joint = new btHingeConstraint(*bodyA, *bodyB, pivotInA, pivotInB, axisInA, axisInB);
+	//btHingeConstraint* tempHinge = new btHingeConstraint(*body[bodyAIndex], *body[bodyBIndex], pivotInA, pivotInB, axisInA, axisInB);
+	m_dynamicsWorld->addConstraint(joint, true);
+}
+
+
 void RagdollDemo::initPhysics()
 {
 	// Setup the basic world
-
+	pause = false;
+	
 	setTexturing(true);
 	setShadows(true);
 
@@ -474,6 +512,33 @@ void RagdollDemo::initPhysics()
 	CreateSphereBox();
 	CreateSpheres();
 
+	//CreateCylinder2(double x, double y, double z,double radius, double length, double eulerX, double eulerY, double eulerZ)
+	//Create Flag pole
+	flag_pole = CreateCylinder2(0, 0, 3, 0.5, 14, 0, 0, 0);
+
+	//Create flag (put this into function later)
+	int flagx=-4;
+	int flagy=13;
+	int flagz=3;
+	int flagwidth=4;
+	int flagheight=2;
+	double flaglength=0.25;
+
+	flag_shape = new btBoxShape(btVector3(btScalar(flagwidth),btScalar(flagheight),btScalar(flaglength))); 
+	btTransform offset; 
+	offset.setIdentity(); 
+	offset.setOrigin(btVector3(btScalar(flagx),btScalar(flagy),btScalar(flagz))); 
+	flag_body = localCreateRigidBody(btScalar(1.0),offset,flag_shape); 
+
+	//body[index]->setUserPointer(&IDs[index]);
+
+	//if(index>9){
+		flag_body->setMassProps(1, btVector3(0,0,0));
+
+	//CreateHinge(btRigidBody* bodyA, btRigidBody* bodyB, const btVector3& axisInA, const btVector3& axisInB,
+		//const btVector3& pivotInA, const btVector3& pivotInB);
+	//CreateHinge(flag_pole, flag_body, btVector3(,0,-1));
+
 	clientResetScene();		
 }
 
@@ -496,7 +561,9 @@ void RagdollDemo::clientMoveAndDisplay()
 
 	if (m_dynamicsWorld)
 	{
-		m_dynamicsWorld->stepSimulation(ms / 1000000.f);
+		if(!pause){
+			m_dynamicsWorld->stepSimulation(ms / 1000000.f);
+		}
 		
 		//optional but useful: debug drawing
 		m_dynamicsWorld->debugDrawWorld();
@@ -534,7 +601,22 @@ void RagdollDemo::keyboardCallback(unsigned char key, int x, int y)
 		btVector3 startOffset(0,2,0);
 		spawnRagdoll(startOffset);
 		break;
-		} 
+		}
+	case 'p':
+		{
+			if(!pause){
+				pause = true;
+			}else{
+				pause = false;
+			}
+			break;
+		}
+	case 'f':
+		{
+			spheres_body[0]->activate(true);
+			spheres_body[0]->applyForce(btVector3(btScalar(13.5),btScalar(0),btScalar(-2)),btVector3(btScalar(13.5),btScalar(0),btScalar(-20)));
+			break;
+		}
 	default:
 		DemoApplication::keyboardCallback(key, x, y);
 	}
@@ -542,7 +624,10 @@ void RagdollDemo::keyboardCallback(unsigned char key, int x, int y)
 	
 }
 
-
+void RagdollDemo::levitateBall(int i, int x, int y)
+{
+	//spheres_body[0] ->applyCentralForce(btVector3(btScalar(13.5),btScalar(5),btScalar(-2)) &10.0)); 
+}
 
 void	RagdollDemo::exitPhysics()
 {

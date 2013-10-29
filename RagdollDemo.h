@@ -90,7 +90,7 @@ public:
 	void CreateCylinder(int index,double x, double y, double z,double radius);
 	btRigidBody* CreateCylinder2(double x, double y, double z,double radius, double length, double eulerX, double eulerY, double eulerZ);
 
-	void levitateBall(int i, int x, int y);
+	void levitateBall(int i);
 
 	void CreateSpheres();
 	void CreateSphereBox();

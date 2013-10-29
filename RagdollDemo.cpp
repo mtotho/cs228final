@@ -17,7 +17,7 @@ Written by: Marten Svanfeldt
 */
 
 #define CONSTRAINT_DEBUG_SIZE 0.2f
-
+int ct = 0;
 
 #include "btBulletDynamicsCommon.h"
 #include "GlutStuff.h"
@@ -42,6 +42,7 @@ Written by: Marten Svanfeldt
 #ifndef M_PI_4
 #define M_PI_4     0.785398163397448309616
 #endif
+
 
 class RagDoll
 {
@@ -339,7 +340,7 @@ void RagdollDemo::CreateSphereBox(){
 	//       index x y z width height length
 
 	int cage_height = 2;
-
+	
 	int box1offset = 9;
 	int box2offset = -9;
 	
@@ -357,7 +358,7 @@ void RagdollDemo::CreateSphereBox(){
 	CreateBox(7, box2offset + 6.625,    0,  -6.5,    0.25,  cage_height,   6.75); //LEFT
 	
 	//Create box under a ball. 
-	//CreateBox(8, 13.5,					0,	-2,		1,		.001,			1); //bottom selector box
+	CreateBox(8, 13.5,					0,	-2,		1,		.001,			1); //bottom selector box
 
 }
 
@@ -480,7 +481,7 @@ void RagdollDemo::initPhysics()
 	//m_dynamicsWorld->getDispatchInfo().m_useConvexConservativeDistanceUtil = true;
 	//m_dynamicsWorld->getDispatchInfo().m_convexConservativeDistanceThreshold = 0.01f;
 
-
+	m_dynamicsWorld->setGravity(btVector3(0,-10,0));
 
 	// Setup a big ground box
 	{
@@ -613,8 +614,12 @@ void RagdollDemo::keyboardCallback(unsigned char key, int x, int y)
 		}
 	case 'f':
 		{
-			spheres_body[0]->activate(true);
-			spheres_body[0]->applyForce(btVector3(btScalar(13.5),btScalar(0),btScalar(-2)),btVector3(btScalar(13.5),btScalar(0),btScalar(-20)));
+			levitateBall(ct);
+			break;
+		}
+	case 'n':
+		{
+			ct = ct + 1;
 			break;
 		}
 	default:
@@ -624,9 +629,10 @@ void RagdollDemo::keyboardCallback(unsigned char key, int x, int y)
 	
 }
 
-void RagdollDemo::levitateBall(int i, int x, int y)
+void RagdollDemo::levitateBall(int i)
 {
-	//spheres_body[0] ->applyCentralForce(btVector3(btScalar(13.5),btScalar(5),btScalar(-2)) &10.0)); 
+	spheres_body[i]->activate(true);
+	spheres_body[i]->setGravity(btVector3(btScalar(0),btScalar(1),btScalar(0)));
 }
 
 void	RagdollDemo::exitPhysics()

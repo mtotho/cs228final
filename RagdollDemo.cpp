@@ -604,7 +604,7 @@ void RagdollDemo::clientMoveAndDisplay()
 				
 				float windSpeed = 10;
 				int downwardGravity=-30; //whent he ball gets over the right box
-				int windballSpeed = 0;
+				//int windballSpeed = 0;
 				maxTimeStep=1200;
 
 				timeStep++;

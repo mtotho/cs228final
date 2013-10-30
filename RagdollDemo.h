@@ -48,9 +48,13 @@ class RagdollDemo : public GlutDemoApplication
 public:
 	btCollisionShape* spheres_shape[16];
 	btRigidBody* spheres_body[16];
+	btCollisionShape* windball_shape;
+	btRigidBody* windball_body;
 	bool isFloating[16];
+	int maxTimeStep;
 
-
+	int timeStep;
+	int windDirection;
 	btRigidBody* flag_pole;
 
 	btCollisionShape* flag_shape;
@@ -95,8 +99,8 @@ public:
 	void ResetGravity(int i);
 	void dropBall(int i);
 
-	//void PointWorldToLocal(btRigidBody* body, btVector3& p);
-	//void AxisWorldToLocal(btRigidBody* body, btVector3& a);
+	btVector3 PointWorldToLocal(btRigidBody* body, btVector3& p);
+	btVector3 AxisWorldToLocal(btRigidBody* body, btVector3& a);
 
 	void CreateSpheres();
 	void CreateSphereBox();

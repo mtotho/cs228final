@@ -385,10 +385,25 @@ void RagdollDemo::CreateSpheres(){
 	CreateCylinder(11, 		7.5,	 0,	   -11,   1);
 
 	//right most column
-	CreateCylinder(8, 		4.5,	 0,	   -2, 	  1);
-	CreateCylinder(9, 		4.5,	 0,	   -5, 	  1);
-	CreateCylinder(10, 		4.5,	 0,	   -8, 	  1);
-	CreateCylinder(11, 		4.5,	 0,	   -11,   1);
+	CreateCylinder(12, 		4.5,	 0,	   -2, 	  1);
+	CreateCylinder(13, 		4.5,	 0,	   -5, 	  1);
+	CreateCylinder(14, 		4.5,	 0,	   -8, 	  1);
+	CreateCylinder(15, 		4.5,	 0,	   -11,   1);
+
+
+	//create windball
+	windball_shape= new btCapsuleShape(btScalar(1),btScalar(0));
+	btTransform offset; 
+	offset.setIdentity(); 
+	offset.setOrigin(btVector3(btScalar(0),btScalar(0),btScalar(-15)));
+
+	btTransform transform;
+	transform.setOrigin(btVector3(btScalar(0),btScalar(1),btScalar(0)));
+	transform.getBasis().setEulerZYX(1,0,0); 
+
+	windball_body= localCreateRigidBody(btScalar(1.0),offset*transform,windball_shape);
+
+
 }
 
 //This is actually create Sphere. will change
@@ -461,7 +476,7 @@ void RagdollDemo::initPhysics()
 {
 	// Setup the basic world
 	pause = false;
-	
+	timeStep=0;
 	setTexturing(true);
 	setShadows(true);
 
@@ -527,6 +542,7 @@ void RagdollDemo::initPhysics()
 
 	flag_shape = new btBoxShape(btVector3(btScalar(flagwidth),btScalar(flagheight),btScalar(flaglength))); 
 	btTransform offset; 
+
 	offset.setIdentity(); 
 	offset.setOrigin(btVector3(btScalar(flagx),btScalar(flagy),btScalar(flagz))); 
 	flag_body = localCreateRigidBody(btScalar(1.0),offset,flag_shape); 
@@ -546,9 +562,11 @@ void RagdollDemo::initPhysics()
 		//btTransform local1 = body->getCenterOfMassTransform().inverse();
 	//return local1*p;
 
-	//CreateHinge(flag_pole, flag_body, AxisWorldToLocal(flag_pole, btVector3(1, 0, 0)), AxisWorldToLocal(flag_body, btVector3(1, 0, 0)),
-	//	 PointWorldToLocal(flag_pole, btVector3(0, 12, 0.5)), PointWorldToLocal(flag_body, btVector3(0, 1, 0));
-
+	//btHingeConstraint* flagjoint = new  btHingeConstraint(*flag_pole, *flag_body ,btVector3(0, 12, 0.5), btVector3(0, 1, 0), btVector3(0, 0, -1),  btVector3(0, 0, -1));
+	//m_dynamicsWorld->addConstraint(flagjoint, true);
+	//CreateHinge(flag_pole, flag_body, AxisWorldToLocal(flag_pole, btVector3(0, 0, -1)), AxisWorldToLocal(flag_body, btVector3(0, 0, -1)),	
+		//PointWorldToLocal(flag_pole, btVector3(0, 12, 0.5)), PointWorldToLocal(flag_body, btVector3(0, 1, 0)));
+//
 	//reset some ball stuff
 	ct=0;
 
@@ -583,7 +601,63 @@ void RagdollDemo::clientMoveAndDisplay()
 	if (m_dynamicsWorld)
 	{
 		if(!pause){
-			m_dynamicsWorld->stepSimulation(ms / 1000000.f);
+				
+				float windSpeed = 10;
+				int downwardGravity=-30; //whent he ball gets over the right box
+				int windballSpeed = 0;
+				maxTimeStep=1200;
+
+				timeStep++;
+				timeStep=timeStep % maxTimeStep;
+				
+				if(timeStep<maxTimeStep/2){
+
+					windDirection=-1; //-1 for right
+					
+
+				}else{
+					windDirection=1;
+				}
+
+
+
+				 printf("%d\n", timeStep);
+							int i;
+
+				//control the windball movement
+			//	if(windDirection==-1){
+					windball_body->applyCentralForce(btVector3(windDirection*1.5, 0.f, 0.f));
+			//	}else{
+				//	windball_body->applyCentralForce(btVector3(3, 0.f, 0.f));
+			//	}
+
+				for (i=0;i<16 ;i++)
+				{
+				   //btCollisionObject* obj = m_dynamicsWorld->getCollisionObjectArray()[i];
+				  btRigidBody* body = spheres_body[i];// btRigidBody::upcast(obj);
+				  
+				  const btVector3 pos = body->getCenterOfMassPosition();
+				  double posy = pos.getY();
+				  double posx = pos.getX();
+
+				  if(posy>=6 && posx >2){
+
+					  if(!body->isStaticObject()){
+					   body->applyCentralForce(btVector3(windDirection*windSpeed,0.f,0.f)); 
+					  }
+				  }//end if posy>6
+
+				 
+				  if(posx<0){
+					body->setGravity(btVector3(btScalar(0),btScalar(downwardGravity),btScalar(0)));
+					//body->applyCentralForce(btVector3(windDirection*2,0.f,0.f)); 
+				  }
+					  
+				}//end for
+
+				m_dynamicsWorld->stepSimulation(ms / 1000000.f);
+
+
 		}
 		
 		//optional but useful: debug drawing
@@ -644,7 +718,7 @@ void RagdollDemo::keyboardCallback(unsigned char key, int x, int y)
 		}
 	case 'n':
 		{
-			ct = ct + 1;
+			ct = (ct + 1)%16;
 			//spheres_body[0]-
 			break;
 		}
@@ -659,7 +733,6 @@ void RagdollDemo::keyboardCallback(unsigned char key, int x, int y)
 
 	
 }
-/*
 
 btVector3 RagdollDemo::PointWorldToLocal(btRigidBody* body, btVector3& p)
 {
@@ -673,7 +746,7 @@ btVector3 RagdollDemo::AxisWorldToLocal(btRigidBody* body, btVector3& a) {
 	local1.setOrigin(zero);
 	return local1*a;
 }
-*/
+
 void RagdollDemo::ResetGravity(int i){
 	spheres_body[i]->activate(true);
 	spheres_body[i]->setGravity(btVector3(btScalar(0),btScalar(0),btScalar(0)));

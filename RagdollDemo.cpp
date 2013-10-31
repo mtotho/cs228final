@@ -638,7 +638,7 @@ void RagdollDemo::clientMoveAndDisplay()
 
 				//Apply force to flag
 				flag_body->activate(true);
-				flag_body->applyCentralForce(btVector3(windDirection*windSpeed/2,0.f,0)); 
+				flag_body->applyCentralForce(btVector3(windDirection*windSpeed,0.f,0)); 
 
 				for (i=0;i<16 ;i++)
 				{

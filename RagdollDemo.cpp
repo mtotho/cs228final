@@ -716,24 +716,27 @@ void RagdollDemo::keyboardCallback(unsigned char key, int x, int y)
 			}
 			break;
 		}
-	case 'f':
+	case 'w':
 		{
-			if(isFloating[ct]){
-				dropBall(ct);
-			}else{
-				levitateBall(ct);
-			}
+			levitateBall(ct);
 			break;
 		}
-	case 'n':
+	case 's':
+		{
+			dropBall(ct);
+			break;
+		}
+	case 'd':
 		{
 			ct = (ct + 1)%16;
+			spheres_body[ct]->activate(true);
 			//spheres_body[0]-
 			break;
 		}
-	case 'b':
+	case 'a':
 		{
-			ct = ct - 1;
+			ct = (ct - 1)%16;
+			spheres_body[ct]->activate(true);
 			break;
 		}
 	default:
@@ -757,7 +760,6 @@ btVector3 RagdollDemo::AxisWorldToLocal(btRigidBody* body, btVector3& a) {
 }
 
 void RagdollDemo::ResetGravity(int i){
-	spheres_body[i]->activate(true);
 	spheres_body[i]->setGravity(btVector3(btScalar(0),btScalar(0),btScalar(0)));
 	isFloating[i]=false;
 } 
@@ -771,7 +773,6 @@ void RagdollDemo::dropBall(int i){
 
 void RagdollDemo::levitateBall(int i)
 {
-	spheres_body[i]->activate(true);
 	spheres_body[i]->setGravity(btVector3(btScalar(0),btScalar(1),btScalar(0)));
 
 	isFloating[i]=true;

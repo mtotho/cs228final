@@ -1,4 +1,4 @@
-/*
+ /*
 Bullet Continuous Collision Detection and Physics Library
 Ragdoll Demo
 Copyright (c) 2007 Starbreeze Studios
@@ -530,7 +530,7 @@ void RagdollDemo::initPhysics()
 
 	//CreateCylinder2(double x, double y, double z,double radius, double length, double eulerX, double eulerY, double eulerZ)
 	//Create Flag pole
-	flag_pole = CreateCylinder2(0, 0, 3, 0.5, 14, 0, 0, 0);
+	flag_pole = CreateCylinder2(0, 0, 3, 0.25, 14, 0, 0, 0);
 
 	//Create flag (put this into function later)
 	int flagx=-4;
@@ -538,7 +538,7 @@ void RagdollDemo::initPhysics()
 	int flagz=3;
 	int flagwidth=4;
 	int flagheight=2;
-	double flaglength=0.25;
+	double flaglength=0.15;
 
 	flag_shape = new btBoxShape(btVector3(btScalar(flagwidth),btScalar(flagheight),btScalar(flaglength))); 
 	btTransform offset; 
@@ -562,8 +562,10 @@ void RagdollDemo::initPhysics()
 		//btTransform local1 = body->getCenterOfMassTransform().inverse();
 	//return local1*p;
 
-	//btHingeConstraint* flagjoint = new  btHingeConstraint(*flag_pole, *flag_body ,btVector3(0, 12, 0.5), btVector3(0, 1, 0), btVector3(0, 0, -1),  btVector3(0, 0, -1));
-	//m_dynamicsWorld->addConstraint(flagjoint, true);
+	btHingeConstraint* flagjoint = new  btHingeConstraint(*flag_pole, *flag_body ,btVector3(0, 6, 0), btVector3(4, 1, 0), btVector3(1, 0, 1),  btVector3(-1, 0, -1));
+	m_dynamicsWorld->addConstraint(flagjoint, true);
+	
+
 	//CreateHinge(flag_pole, flag_body, AxisWorldToLocal(flag_pole, btVector3(0, 0, -1)), AxisWorldToLocal(flag_body, btVector3(0, 0, -1)),	
 		//PointWorldToLocal(flag_pole, btVector3(0, 12, 0.5)), PointWorldToLocal(flag_body, btVector3(0, 1, 0)));
 //
@@ -631,6 +633,9 @@ void RagdollDemo::clientMoveAndDisplay()
 				//	windball_body->applyCentralForce(btVector3(3, 0.f, 0.f));
 			//	}
 
+				//Apply force to flag
+				flag_body->applyCentralForce(btVector3(windDirection*windSpeed,0.f,0.f)); 
+
 				for (i=0;i<16 ;i++)
 				{
 				   //btCollisionObject* obj = m_dynamicsWorld->getCollisionObjectArray()[i];
@@ -654,7 +659,7 @@ void RagdollDemo::clientMoveAndDisplay()
 				  }
 					  
 				}//end for
-
+				//	m_dynamicsWorld->stepSimulation(m_frameTimer.getDeltaTime());
 				m_dynamicsWorld->stepSimulation(ms / 1000000.f);
 
 

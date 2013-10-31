@@ -59,6 +59,8 @@ public:
 
 	btCollisionShape* flag_shape;
 	btRigidBody*	flag_body;
+	//btHingeConstraint* flagjoint;
+
 
 	bool pause;
 	

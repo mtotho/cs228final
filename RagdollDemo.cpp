@@ -532,6 +532,7 @@ void RagdollDemo::initPhysics()
 	//Create Flag pole
 	flag_pole = CreateCylinder2(0, 0, 3, 0.25, 14, 0, 0, 0);
 
+
 	//Create flag (put this into function later)
 	int flagx=-4;
 	int flagy=13;
@@ -552,8 +553,7 @@ void RagdollDemo::initPhysics()
 	//if(index>9){
 		flag_body->setMassProps(1, btVector3(0,0,0));
 
-	//CreateHinge(btRigidBody* bodyA, btRigidBody* bodyB, const btVector3& axisInA, const btVector3& axisInB,
-		//const btVector3& pivotInA, const btVector3& pivotInB);
+	
 
 
 		//btVector3 axisInA = btTransform local1 = body->getCenterOfMassTransform().inverse();
@@ -712,24 +712,26 @@ void RagdollDemo::keyboardCallback(unsigned char key, int x, int y)
 			}
 			break;
 		}
-	case 'f':
+	case 'w':
 		{
-			if(isFloating[ct]){
-				dropBall(ct);
-			}else{
-				levitateBall(ct);
-			}
+			levitateBall(ct);
 			break;
 		}
-	case 'n':
+	case 'd':
 		{
 			ct = (ct + 1)%16;
-			//spheres_body[0]-
+			spheres_body[ct]->activate(true);
 			break;
 		}
-	case 'b':
+	case 'a':
 		{
-			ct = ct - 1;
+			ct = (ct - 1)%16;
+			spheres_body[ct]->activate(true);
+			break;
+		}
+	case 's':
+		{
+			dropBall(ct);
 			break;
 		}
 	default:
@@ -767,7 +769,6 @@ void RagdollDemo::dropBall(int i){
 
 void RagdollDemo::levitateBall(int i)
 {
-	spheres_body[i]->activate(true);
 	spheres_body[i]->setGravity(btVector3(btScalar(0),btScalar(1),btScalar(0)));
 
 	isFloating[i]=true;

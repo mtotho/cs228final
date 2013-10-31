@@ -530,16 +530,17 @@ void RagdollDemo::initPhysics()
 
 	//CreateCylinder2(double x, double y, double z,double radius, double length, double eulerX, double eulerY, double eulerZ)
 	//Create Flag pole
-	flag_pole = CreateCylinder2(0, 0, 3, 0.25, 14, 0, 0, 0);
-
-
-	//Create flag (put this into function later)
 	int flagx=-4;
 	int flagy=13;
-	int flagz=3;
+	int flagz=6;
 	int flagwidth=4;
 	int flagheight=2;
 	double flaglength=0.15;
+
+	flag_pole = CreateCylinder2(0, 0, flagz, 0.25, 14, 0, 0, 0);
+
+	//Create flag (put this into function later)
+
 
 	flag_shape = new btBoxShape(btVector3(btScalar(flagwidth),btScalar(flagheight),btScalar(flaglength))); 
 	btTransform offset; 
@@ -551,9 +552,10 @@ void RagdollDemo::initPhysics()
 	//body[index]->setUserPointer(&IDs[index]);
 
 	//if(index>9){
-		flag_body->setMassProps(1, btVector3(0,0,0));
-
 	
+		flag_body->setActivationState(DISABLE_DEACTIVATION);
+	//CreateHinge(btRigidBody* bodyA, btRigidBody* bodyB, const btVector3& axisInA, const btVector3& axisInB,
+		//const btVector3& pivotInA, const btVector3& pivotInB);
 
 
 		//btVector3 axisInA = btTransform local1 = body->getCenterOfMassTransform().inverse();
@@ -562,13 +564,14 @@ void RagdollDemo::initPhysics()
 		//btTransform local1 = body->getCenterOfMassTransform().inverse();
 	//return local1*p;
 
-	btHingeConstraint* flagjoint = new  btHingeConstraint(*flag_pole, *flag_body ,btVector3(0, 6, 0), btVector3(4, 1, 0), btVector3(1, 0, 1),  btVector3(-1, 0, -1));
+	btHingeConstraint* flagjoint = new  btHingeConstraint(*flag_pole, *flag_body ,btVector3(0, 6, 0), btVector3(4, 1, 0), btVector3(0,1,0),  btVector3(0,1,0));
+	
+	//btHingeConstraint* flagjoint = new  btHingeConstraint(*flag_body, btVector3(4, 1, 0),  btVector3(0,-1,0));
 	m_dynamicsWorld->addConstraint(flagjoint, true);
 	
 
-	//CreateHinge(flag_pole, flag_body, AxisWorldToLocal(flag_pole, btVector3(0, 0, -1)), AxisWorldToLocal(flag_body, btVector3(0, 0, -1)),	
-		//PointWorldToLocal(flag_pole, btVector3(0, 12, 0.5)), PointWorldToLocal(flag_body, btVector3(0, 1, 0)));
-//
+	flagjoint->setLimit(M_PI/15, M_PI-M_PI/15);
+
 	//reset some ball stuff
 	ct=0;
 
@@ -634,7 +637,8 @@ void RagdollDemo::clientMoveAndDisplay()
 			//	}
 
 				//Apply force to flag
-				flag_body->applyCentralForce(btVector3(windDirection*windSpeed,0.f,0.f)); 
+				flag_body->activate(true);
+				flag_body->applyCentralForce(btVector3(windDirection*windSpeed/2,0.f,0)); 
 
 				for (i=0;i<16 ;i++)
 				{
@@ -712,26 +716,24 @@ void RagdollDemo::keyboardCallback(unsigned char key, int x, int y)
 			}
 			break;
 		}
-	case 'w':
+	case 'f':
 		{
-			levitateBall(ct);
+			if(isFloating[ct]){
+				dropBall(ct);
+			}else{
+				levitateBall(ct);
+			}
 			break;
 		}
-	case 'd':
+	case 'n':
 		{
 			ct = (ct + 1)%16;
-			spheres_body[ct]->activate(true);
+			//spheres_body[0]-
 			break;
 		}
-	case 'a':
+	case 'b':
 		{
-			ct = (ct - 1)%16;
-			spheres_body[ct]->activate(true);
-			break;
-		}
-	case 's':
-		{
-			dropBall(ct);
+			ct = ct - 1;
 			break;
 		}
 	default:
@@ -769,6 +771,7 @@ void RagdollDemo::dropBall(int i){
 
 void RagdollDemo::levitateBall(int i)
 {
+	spheres_body[i]->activate(true);
 	spheres_body[i]->setGravity(btVector3(btScalar(0),btScalar(1),btScalar(0)));
 
 	isFloating[i]=true;

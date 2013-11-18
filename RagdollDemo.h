@@ -52,6 +52,8 @@ public:
 	btRigidBody* windball_body;
 	bool isFloating[16];
 	int maxTimeStep;
+	bool floatPressed; //Boolean to indicate whether "w" for float is pressed
+	bool dropPressed; //boolean to indicate whether "s" for drop is pressed
 
 	int timeStep;
 	int windDirection;

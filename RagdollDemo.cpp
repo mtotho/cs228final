@@ -578,6 +578,8 @@ void RagdollDemo::initPhysics()
 
 	clientResetScene();
 
+	floatPressed=false;
+	dropPressed = false;
 
 	for(int i=0; i<16; i++){
 		//ResetGravity(i);
@@ -649,7 +651,7 @@ void RagdollDemo::clientMoveAndDisplay()
 				  double posy = pos.getY();
 				  double posx = pos.getX();
 
-				  if(posy>=6 && posx >2){
+				  if(posy>=5 && posx >2){
 
 					  if(!body->isStaticObject()){
 					   		body->applyCentralForce(btVector3(windDirection*windSpeed,0.f,0.f)); 
@@ -658,11 +660,28 @@ void RagdollDemo::clientMoveAndDisplay()
 
 				 
 				  if(posx<0){
-					body->setGravity(btVector3(btScalar(0),btScalar(downwardGravity),btScalar(0)));
+					//body->setGravity(btVector3(btScalar(0),btScalar(downwardGravity),btScalar(0)));
 					//body->applyCentralForce(btVector3(windDirection*2,0.f,0.f)); 
 				  }
 					  
 				}//end for
+
+
+				if(floatPressed==true){
+					spheres_body[ct]->activate(true);
+					spheres_body[ct]->applyCentralForce(btVector3(0.f, 50.f, 0));
+				}	
+			
+
+				if(dropPressed==true && floatPressed==false){
+					spheres_body[ct]->activate(true);
+					spheres_body[ct]->applyCentralForce(btVector3(0.f, -50.f, 0));
+				}
+
+
+				floatPressed=false;
+				dropPressed=false;
+
 				//	m_dynamicsWorld->stepSimulation(m_frameTimer.getDeltaTime());
 				m_dynamicsWorld->stepSimulation(ms / 1000000.f);
 
@@ -718,12 +737,14 @@ void RagdollDemo::keyboardCallback(unsigned char key, int x, int y)
 		}
 	case 'w':
 		{
-			levitateBall(ct);
+			floatPressed=true;
+			//levitateBall(ct);
 			break;
 		}
 	case 's':
 		{
-			dropBall(ct);
+			dropPressed=true;
+			//dropBall(ct);
 			break;
 		}
 	case 'd':

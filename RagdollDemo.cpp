@@ -584,6 +584,8 @@ void RagdollDemo::initPhysics()
 	for(int i=0; i<16; i++){
 		//ResetGravity(i);
 		isFloating[i]=false;
+		hitTarget[i]=false;
+		canLift[i]=false;
 	}
 		
 }
@@ -609,7 +611,7 @@ void RagdollDemo::clientMoveAndDisplay()
 	{
 		if(!pause){
 				
-				float windSpeed = 10;
+				float windSpeed = 5;
 				int downwardGravity=-30; //whent he ball gets over the right box
 				//int windballSpeed = 0;
 				maxTimeStep=1200;
@@ -640,7 +642,7 @@ void RagdollDemo::clientMoveAndDisplay()
 
 				//Apply force to flag
 				flag_body->activate(true);
-				flag_body->applyCentralForce(btVector3(windDirection*windSpeed,0.f,0)); 
+				flag_body->applyCentralForce(btVector3(windDirection*2*windSpeed,0.f,0)); 
 
 				//TODO: delete below code
 				  btRigidBody* body = spheres_body[ct];
@@ -649,7 +651,7 @@ void RagdollDemo::clientMoveAndDisplay()
 				  double posx = pos.getX();
 				  double posz = pos.getZ();
 
-				 printf("ball: %d posx: %.2f, posz: %.2f\n", ct, posx, posz);
+				// printf("ball: %d posx: %.2f, posz: %.2f, posy: %.2f\n", ct, posx, posz, posy);
 				for (i=0;i<16 ;i++)
 				{
 				   //btCollisionObject* obj = m_dynamicsWorld->getCollisionObjectArray()[i];
@@ -660,7 +662,7 @@ void RagdollDemo::clientMoveAndDisplay()
 				  double posx = pos.getX();
 				  double posz = pos.getZ();
 
-				  if(posy>=5 && posx >2){
+				  if(posy>=5){
 
 					  if(!body->isStaticObject()){
 					   		body->applyCentralForce(btVector3(windDirection*windSpeed,0.f,0.f)); 
@@ -673,6 +675,14 @@ void RagdollDemo::clientMoveAndDisplay()
 					//body->applyCentralForce(btVector3(windDirection*2,0.f,0.f)); 
 				  }
 					  
+				  	//If ball is not in either box and is on the ground, failure
+				 	if(!inBoxB(i) && !inBoxA(i) && posy<1.5){
+				 		//printf("ball: %d Failed\n", i);
+				 		
+				 	}
+
+				 	hitTarget[i]=inBoxB(i);
+				 	canLift[i]=inBoxA(i); //Indicates whether or not we can lift the ball
 				}//end for
 
 
@@ -759,6 +769,10 @@ void RagdollDemo::keyboardCallback(unsigned char key, int x, int y)
 	case 'd':
 		{
 			ct = (ct + 1)%16;
+			//skip balls we already hit
+			while(!canLift[ct]){
+				ct = (ct + 1)%16;
+			}
 			spheres_body[ct]->activate(true);
 			//spheres_body[0]-
 			break;
@@ -773,6 +787,13 @@ void RagdollDemo::keyboardCallback(unsigned char key, int x, int y)
 			}else{
 				ct=ct-1;
 			}
+			while(!canLift[ct]){
+				if(ct==0){
+					ct=15;
+				}else{
+					ct=ct-1;
+				}
+			}
 
 			spheres_body[ct]->activate(true);
 			break;
@@ -784,14 +805,29 @@ void RagdollDemo::keyboardCallback(unsigned char key, int x, int y)
 	
 }
 
-bool inBoxB(int ct){
+bool RagdollDemo::inBoxB(int ct){
 	btRigidBody* body = spheres_body[ct];
 	const btVector3 pos = body->getCenterOfMassPosition();
 	double posy = pos.getY();
 	double posx = pos.getX();
 	double posz = pos.getZ();
 
-	if(posx<-3 && posx>-15 && posz<-1 && posz>-12){
+	if(posx<-3 && posx>-15 && posz<-1 && posz>-12 && posy<1.5){
+		return true;
+	}else{
+		return false;
+	}
+
+}
+
+bool RagdollDemo::inBoxA(int ct){
+	btRigidBody* body = spheres_body[ct];
+	const btVector3 pos = body->getCenterOfMassPosition();
+	double posy = pos.getY();
+	double posx = pos.getX();
+	double posz = pos.getZ();
+
+	if(posx>3 && posx<15 && posz<-1 && posz>-12 && posy<1.5){
 		return true;
 	}else{
 		return false;

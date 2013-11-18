@@ -51,6 +51,9 @@ public:
 	btCollisionShape* windball_shape;
 	btRigidBody* windball_body;
 	bool isFloating[16];
+	bool hitTarget[16];
+	bool canLift[16];
+
 	int maxTimeStep;
 	bool floatPressed; //Boolean to indicate whether "w" for float is pressed
 	bool dropPressed; //boolean to indicate whether "s" for drop is pressed
@@ -108,8 +111,9 @@ public:
 
 	void CreateSpheres();
 	void CreateSphereBox();
-	
+
 	bool inBoxB(int ct);
+	bool inBoxA(int ct);
 
 	void CreateHinge(btRigidBody* bodyA, btRigidBody* bodyB, const btVector3& axisInA, const btVector3& axisInB,
 		const btVector3& pivotInA, const btVector3& pivotInB);

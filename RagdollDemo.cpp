@@ -652,7 +652,7 @@ void RagdollDemo::clientMoveAndDisplay()
 				  if(posy>=6 && posx >2){
 
 					  if(!body->isStaticObject()){
-					   body->applyCentralForce(btVector3(windDirection*windSpeed,0.f,0.f)); 
+					   		body->applyCentralForce(btVector3(windDirection*windSpeed,0.f,0.f)); 
 					  }
 				  }//end if posy>6
 

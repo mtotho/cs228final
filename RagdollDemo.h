@@ -108,6 +108,8 @@ public:
 
 	void CreateSpheres();
 	void CreateSphereBox();
+	
+	bool inBoxB(int ct);
 
 	void CreateHinge(btRigidBody* bodyA, btRigidBody* bodyB, const btVector3& axisInA, const btVector3& axisInB,
 		const btVector3& pivotInA, const btVector3& pivotInB);

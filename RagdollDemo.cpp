@@ -628,7 +628,7 @@ void RagdollDemo::clientMoveAndDisplay()
 
 
 
-				 printf("%d\n", timeStep);
+				
 							int i;
 
 				//control the windball movement
@@ -642,6 +642,14 @@ void RagdollDemo::clientMoveAndDisplay()
 				flag_body->activate(true);
 				flag_body->applyCentralForce(btVector3(windDirection*windSpeed,0.f,0)); 
 
+				//TODO: delete below code
+				  btRigidBody* body = spheres_body[ct];
+				 const btVector3 pos = body->getCenterOfMassPosition();
+				  double posy = pos.getY();
+				  double posx = pos.getX();
+				  double posz = pos.getZ();
+
+				 printf("ball: %d posx: %.2f, posz: %.2f\n", ct, posx, posz);
 				for (i=0;i<16 ;i++)
 				{
 				   //btCollisionObject* obj = m_dynamicsWorld->getCollisionObjectArray()[i];
@@ -650,6 +658,7 @@ void RagdollDemo::clientMoveAndDisplay()
 				  const btVector3 pos = body->getCenterOfMassPosition();
 				  double posy = pos.getY();
 				  double posx = pos.getX();
+				  double posz = pos.getZ();
 
 				  if(posy>=5 && posx >2){
 
@@ -755,8 +764,16 @@ void RagdollDemo::keyboardCallback(unsigned char key, int x, int y)
 			break;
 		}
 	case 'a':
-		{
-			ct = (ct - 1)%16;
+		{	
+			//Modulus not working properly for negatives, initiate hack
+			//ct = (ct - 1)%16;
+
+			if(ct==0){
+				ct=15;
+			}else{
+				ct=ct-1;
+			}
+
 			spheres_body[ct]->activate(true);
 			break;
 		}
@@ -765,6 +782,21 @@ void RagdollDemo::keyboardCallback(unsigned char key, int x, int y)
 	}
 
 	
+}
+
+bool inBoxB(int ct){
+	btRigidBody* body = spheres_body[ct];
+	const btVector3 pos = body->getCenterOfMassPosition();
+	double posy = pos.getY();
+	double posx = pos.getX();
+	double posz = pos.getZ();
+
+	if(posx<-3 && posx>-15 && posz<-1 && posz>-12){
+		return true;
+	}else{
+		return false;
+	}
+
 }
 
 btVector3 RagdollDemo::PointWorldToLocal(btRigidBody* body, btVector3& p)
